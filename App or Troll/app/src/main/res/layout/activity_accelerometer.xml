@@ -14,4 +14,32 @@
         android:id="@+id/accelTexr"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ShowData"
+        android:id="@+id/dataBotton"
+        android:layout_below="@+id/accelTexr"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="83dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:id="@+id/dataView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SaveData"
+        android:id="@+id/gemData"
+        android:layout_alignTop="@+id/dataBotton"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
