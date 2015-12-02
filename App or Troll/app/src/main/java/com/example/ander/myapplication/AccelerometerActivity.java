@@ -31,9 +31,6 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private long lastUpdate = 0;
-    private double last_x, last_y, last_z;
-    private static final int SHAKE_THRESHOLD_LOW = 600;
-    private static final int SHAKE_THRESHOLD_HIGH = 1200;
     TextView stepText;
     private int steps = 0;
     private int arraySelector = 0;
@@ -43,8 +40,9 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
     private ArrayList<Double> array = new ArrayList<Double>();
     private ArrayList<Double> array2 = new ArrayList<Double>();
     private ArrayList<Double> temp = new ArrayList<Double>();
-    private int counter;
-    Double[] temparray;
+    private int counter = 0;
+    private int arrayCounter = 0;
+
 
 
 
@@ -129,37 +127,14 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
                 double speed = Math.sqrt(x*x + y*y + z*z );
                 steps++;
                 stepText.setText(""+steps);
-                if (arraySelector == 0){
-                    array.add(counter, speed);
-                    counter++;
-                } else {
-                    array2.add(counter, speed);
-                    counter++;
+
+                array.add(speed);
+                counter++;
+
+                if ((array.size() % 128 )== 0){
+                    saveData(temp);
+                    arrayCounter++;
                 }
-
-                if (array.size() == 128){
-                    saveData(array);
-                    counter = 0;
-                    arraySelector = 1;
-
-
-                } else if(array2.size() == 128){
-                    saveData(array2);
-                    counter = 0;
-                    arraySelector = 0;
-
-                }/* else if(counter == 64 & arraySelector == 0){
-                    temp = (ArrayList) array2.subList(63, 127);
-                    temp.addAll(array.subList(0, 63));
-                    saveData(temp);
-                    temp.clear();
-
-                } else if(counter == 64 & arraySelector == 1){
-                    temp = (ArrayList) array.subList(63, 127);
-                    temp.addAll(array2.subList(0, 63));
-                    saveData(temp);
-                    temp.clear();
-                }*/
 
             }
         }
@@ -175,15 +150,19 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
         vals = new double[data.numAttributes()];
         double avg = 0;
         double std = 0;
-        for (int i = 0; i == array.size(); i++){
-            avg = (double) array.get(i) + avg;
+        for (int i = 0; i <= 127; i++){
+            avg = avg + (double) array.get(i);
+            System.out.println(avg);
         }
         avg = avg/128;
+        System.out.println(avg);
 
-        for (int i = 0; i == array.size(); i++){
+        for (int i = 0; i <= 127; i++){
             std = Math.pow(((double) array.get(i) - avg) , 2) + std;
+            System.out.println(std);
         }
         std = std/128;
+        System.out.println(std);
 
         vals[0] = (double) Collections.min(array);
         vals[1] = (double) Collections.max(array);
