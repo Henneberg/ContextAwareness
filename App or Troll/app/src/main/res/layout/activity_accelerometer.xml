@@ -10,36 +10,74 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test"
-        android:id="@+id/accelTexr"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ShowData"
-        android:id="@+id/dataBotton"
-        android:layout_below="@+id/accelTexr"
+        android:text="Measurements completed:"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="83dp" />
+        android:id="@+id/textView2"
+        android:textSize="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test"
-        android:id="@+id/dataView"
-        android:layout_centerVertical="true"
+        android:text="0"
+        android:id="@+id/tvMeasures"
+        android:layout_below="@+id/textView2"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="20dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SaveData"
         android:id="@+id/gemData"
-        android:layout_alignTop="@+id/dataBotton"
-        android:layout_centerHorizontal="true" />
+        android:enabled="false"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-DATA HERE-"
+        android:id="@+id/tvData"
+        android:layout_below="@+id/spinner"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/gemData"
+        android:layout_alignRight="@+id/spinner"
+        android:layout_alignEnd="@+id/spinner" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START"
+        android:id="@+id/butStart"
+        android:layout_below="@+id/tvMeasures"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="24dp"
+        android:enabled="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STOP"
+        android:id="@+id/butStop"
+        android:layout_alignTop="@+id/butStart"
+        android:layout_toRightOf="@+id/butStart"
+        android:layout_toEndOf="@+id/butStart"
+        android:enabled="false" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner"
+        android:layout_alignTop="@+id/butStop"
+        android:layout_toEndOf="@+id/butStop"
+        android:spinnerMode="dropdown"
+        android:layout_toRightOf="@+id/butStop"
+        android:layout_alignBottom="@+id/butStop" />
 
 </RelativeLayout>
