@@ -5,6 +5,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -149,6 +151,8 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
                     saver.setFile(olddest);
                     saver.writeBatch();
 
+                    scanFile(olddest);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -157,6 +161,7 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
                 measurements = new ArrayList<Double>();
                 measures = 0;
                 spinner.setSelection(0);
+                spinner.setEnabled(true);
                 gemData.setEnabled(false);
                 dataField.setText("");
                 stepText.setText(""+measures);
@@ -268,6 +273,14 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
         atts.addElement(new Attribute("meanMag"));
         data = new Instances("Accelerometer", atts, 0);
     }
+
+
+
+
+    private void scanFile(File fileName) {
+        MediaScannerConnection.scanFile(this.getApplicationContext(), new String[] {fileName.getAbsolutePath()}, null, null);
+    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
