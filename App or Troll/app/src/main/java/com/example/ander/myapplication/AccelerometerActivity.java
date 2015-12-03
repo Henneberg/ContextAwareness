@@ -74,6 +74,7 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
             @Override
             public void onClick(View v) {
                 started = true;
+                spinner.setEnabled(false);
                 butStart.setEnabled(false);
                 butStop.setEnabled(true);
             }
@@ -158,6 +159,7 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
                 spinner.setSelection(0);
                 gemData.setEnabled(false);
                 dataField.setText("");
+                stepText.setText(""+measures);
 
             }
         });
@@ -175,6 +177,11 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
     }
 
     private void doCalculations() {
+        if(measurements.size() >= 100) {
+            measurements = new ArrayList<Double>(measurements.subList(50, measurements.size()-50));
+            (Toast.makeText(getApplicationContext(), "Removed 50 first and last samples.", Toast.LENGTH_SHORT)).show();
+        }
+
         int start = 0;
         int end = 128;
         int maxIndex = measurements.size();
@@ -240,10 +247,10 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
         System.out.println("AVG: "+avg);
 
         for (int i = 0; i < 128; i++){
-            std = Math.pow(((double) array.get(i) - avg) , 2) + std;
+            std = std + Math.pow(((double) array.get(i) - avg) , 2);
             System.out.println(std);
         }
-        std = std/128;
+        std = Math.sqrt(std/128);
         System.out.println("STD: "+std);
 
         vals[0] = (double) Collections.min(array);
