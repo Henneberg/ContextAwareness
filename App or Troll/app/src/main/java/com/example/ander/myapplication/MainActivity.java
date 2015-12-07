@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button accelButton;
+    Button accelButton, butCollectActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent accel = new Intent(getApplicationContext(), AccelerometerActivity.class);
                 startActivity(accel);
+            }
+        });
+
+        butCollectActivity = (Button) findViewById(R.id.butCollectActivity);
+        butCollectActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent coll = new Intent(getApplicationContext(), CollectActivity.class);
+                startActivity(coll);
             }
         });
 
