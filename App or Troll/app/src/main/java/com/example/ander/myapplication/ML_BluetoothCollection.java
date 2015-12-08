@@ -123,6 +123,7 @@ public class ML_BluetoothCollection extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentLoc = locations[position];
                 btScan.setEnabled(true);
+                btAdd.setEnabled(false);
             }
 
             @Override
@@ -208,6 +209,7 @@ public class ML_BluetoothCollection extends AppCompatActivity {
     private void saveToFile() {
         tvData.setText(data.toString());
 
+        measurements = new ArrayList<BTMeasurement>();
         writeArffFile();
         setupWEKAGarbage();
     }
