@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -19,7 +21,15 @@ import android.widget.Toast;
 
 import com.example.ander.myapplication.Util.BTMeasurement;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import weka.core.Attribute;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 
 public class ML_BluetoothCollection extends AppCompatActivity {
 
@@ -34,7 +44,6 @@ public class ML_BluetoothCollection extends AppCompatActivity {
 
     private String currentLoc;
     private final String[] locations = {"Kitchen", "Hall", "Bathroom", "Living Room", "Bedroom", "Indoor Terrace"};
-
 
     private final String ADDR_B0 = "34:E2:FD:4E:0D:D8"; // pls insert real (Anders iPhone)
     private final String ADDR_B1 = "DD:7D:B3:58:CA:98"; // pls insert real (Nabu X)
@@ -88,7 +97,7 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ml__bluetooth_collection);
 
-
+        setupWEKAGarbage();
         measurements = new ArrayList<BTMeasurement>();
 
         spLocation = (Spinner) findViewById(R.id.spLocation);
@@ -134,8 +143,7 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         btAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BTMeasurement btm = new BTMeasurement(SS[0], SS[1], SS[2], currentLoc);
-                measurements.add(btm);
+                addMeasurement(SS[0], SS[1], SS[2], currentLoc);
                 updateDataView();
 
                 btAdd.setEnabled(false);
@@ -177,6 +185,13 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         }
     }
 
+    private void addMeasurement(Short s1, Short s2, Short s3, String currLoc) {
+        BTMeasurement btm = new BTMeasurement(s1, s2, s3, currLoc);
+        measurements.add(btm);
+
+        insertData(s1, s2, s3, currLoc); // Inserts into WEKA-crap. FINGER MY ASS
+    }
+
     private void checkTooSlow() {
         for(int i = 0; i < lastSeen.length; i++) {
             if((System.currentTimeMillis() - lastSeen[i]) >= MAX_WAIT) {
@@ -187,7 +202,10 @@ public class ML_BluetoothCollection extends AppCompatActivity {
     }
 
     private void saveToFile() {
-        shortToast("FILE SAVE NOT IMPLEMENTED");
+        tvData.setText(data.toString());
+
+        writeArffFile();
+        setupWEKAGarbage();
     }
 
     private void prepareForScan() {
@@ -247,5 +265,73 @@ public class ML_BluetoothCollection extends AppCompatActivity {
                 blAdapter.enable();
             }
         }
+    }
+
+
+
+
+    FastVector attributes;
+    FastVector classes;
+    Instances data;
+
+    private void setupWEKAGarbage() {
+        attributes = new FastVector();
+
+        attributes.addElement(new Attribute("SS1"));
+        attributes.addElement(new Attribute("SS2"));
+        attributes.addElement(new Attribute("SS3"));
+
+        classes = new FastVector(); // Adds every room (from 'locations' String-array up top) to the possible values for class.
+        for(String s : locations) {
+            classes.addElement(s);
+        }
+        attributes.addElement(new Attribute("class", classes));
+
+        data = new Instances("BluetoothPositioning", attributes, 0);
+    }
+
+    private void insertData(Short SS1, Short SS2, Short SS3, String classVal) {
+        double[] vals = new double[data.numAttributes()];
+
+        vals[0] = SS1;
+        vals[1] = SS2;
+        vals[2] = SS3;
+        vals[3] = classes.indexOf(classVal);
+        data.add(new Instance(1.0, vals));
+    }
+
+    private void writeArffFile() {
+        try {
+            int vs = 0;
+            File dest;
+            while(true) {
+                dest = new File(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+                        + "/ML_Bluetooth"+vs+".arff");
+                if(dest.exists()) {
+                    vs++;
+                } else {
+                    break;
+                }
+            }
+
+            ArffSaver saver = new ArffSaver();
+            saver.setInstances(data);
+            String output = "Saved to: " + dest.getAbsolutePath();
+
+            saver.setFile(dest);
+            saver.writeBatch();
+
+            System.out.println(output);
+            (Toast.makeText(getApplicationContext(), output, Toast.LENGTH_LONG)).show();
+
+            scanFile(dest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void scanFile(File fileName) {
+        MediaScannerConnection.scanFile(getApplicationContext(), new String[]{fileName.getAbsolutePath()}, null, null);
     }
 }
