@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         butCollectActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent coll = new Intent(getApplicationContext(), CollectActivity.class);
+                Intent coll = new Intent(getApplicationContext(), ML_BluetoothCollection.class);
                 startActivity(coll);
             }
         });

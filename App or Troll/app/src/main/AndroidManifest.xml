@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -32,9 +34,13 @@
             android:minSdkVersion="14"
             android:targetSdkVersion="19" />
 
-        <activity android:name=".CollectActivity" >
+        <activity
+            android:name=".CollectActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ML_BluetoothCollection" >
+        <activity
+            android:name=".ML_BluetoothCollection"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
