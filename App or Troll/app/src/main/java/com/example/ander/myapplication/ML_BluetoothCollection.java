@@ -194,9 +194,11 @@ public class ML_BluetoothCollection extends AppCompatActivity {
 
     private void checkTooSlow() {
         for(int i = 0; i < lastSeen.length; i++) {
-            if((System.currentTimeMillis() - lastSeen[i]) >= MAX_WAIT) {
-                addSS(i, (short) -110);
-                shortToast("Beacon "+i+" was not seen. (SS = -110)");
+            if(SS[i] == null) {
+                if ((System.currentTimeMillis() - lastSeen[i]) >= MAX_WAIT) {
+                    addSS(i, (short) -110);
+                    shortToast("Beacon " + i + " was not seen. (SS = -110)");
+                }
             }
         }
     }
