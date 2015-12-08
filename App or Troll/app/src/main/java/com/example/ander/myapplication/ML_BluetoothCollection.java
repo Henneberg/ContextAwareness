@@ -33,11 +33,11 @@ import weka.core.converters.ArffSaver;
 
 public class ML_BluetoothCollection extends AppCompatActivity {
 
-    private final long MAX_WAIT = 10000; // Max time we will wait to receive signal to a beacon. If this time is exceeded, SS is set to -110.
+    private final long MAX_WAIT = 20000; // Max time we will wait to receive signal to a beacon. If this time is exceeded, SS is set to -110.
     private final int NO_OF_BEACONS = 3; // Number of beacons being used
-    private final String ADDR_B0 = "34:E2:FD:4E:0D:D8"; // pls insert real (nu: Anders iPhone)
-    private final String ADDR_B1 = "DD:7D:B3:58:CA:98"; // pls insert real (Nabu X)
-    private final String ADDR_B2 = "MA:CA:DD:RE:SS"; // pls insert real
+    private final String ADDR_B0 = "88:C9:D0:71:C1:31"; // Køkken	Nexus 5			88:C9:D0:71:C1:31
+    private final String ADDR_B1 = "DD:7D:B3:58:CA:98"; // Stue	    NabuX			DD:7D:B3:58:CA:98
+    private final String ADDR_B2 = "08:D4:2B:1F:1A:77"; // Sove	    Nexus 10	    08:D4:2B:1F:1A:77
 
 
     private BluetoothAdapter blAdapter;
