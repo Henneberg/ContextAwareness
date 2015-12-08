@@ -293,9 +293,9 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         }
         Attribute classAttr = new Attribute("class", classes);
         attributes.addElement(classAttr);
-        data.setClass(classAttr);
 
         data = new Instances("BluetoothPositioning", attributes, 0);
+        data.setClass(classAttr);
     }
 
     private void insertData(Short SS1, Short SS2, Short SS3, String classVal) {
