@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ander.myapplication.Util.AppConstants;
 import com.example.ander.myapplication.Util.BTMeasurement;
 
 import java.io.File;
@@ -48,7 +49,6 @@ public class ML_BluetoothCollection extends AppCompatActivity {
     private Button btScan, btAdd, btSave;
 
     private String currentLoc;
-    private final String[] locations = {"Kitchen", "Hall", "Bathroom", "Living Room", "Bedroom", "Indoor Terrace"};
 
     private Long[] lastSeen;
     private Short[] SS;
@@ -117,11 +117,11 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         tvData.setMovementMethod(new ScrollingMovementMethod());
         tvData.setScrollbarFadingEnabled(false);
 
-        spLocation.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, locations));
+        spLocation.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, AppConstants.locations));
         spLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                currentLoc = locations[position];
+                currentLoc = AppConstants.locations[position];
                 btScan.setEnabled(true);
                 btAdd.setEnabled(false);
             }
@@ -287,8 +287,8 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         attributes.addElement(new Attribute("SS2"));
         attributes.addElement(new Attribute("SS3"));
 
-        classes = new FastVector(); // Adds every room (from 'locations' String-array up top) to the possible values for class.
-        for(String s : locations) {
+        classes = new FastVector(); // Adds every room (from 'locations' String-array in AppConstants) to the possible values for class.
+        for(String s : AppConstants.locations) {
             classes.addElement(s);
         }
         Attribute classAttr = new Attribute("class", classes);

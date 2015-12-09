@@ -36,11 +36,13 @@
 
         <activity
             android:name=".CollectActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ML_BluetoothCollection"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity android:name=".PrototypeActivity" >
         </activity>
     </application>
 

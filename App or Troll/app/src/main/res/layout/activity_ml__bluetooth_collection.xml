@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/spLocation"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/tvXB2"
-        android:layout_alignEnd="@+id/tvXB2"
+        android:layout_alignRight="@+id/tvXB1"
+        android:layout_alignEnd="@+id/tvXB1"
         android:layout_toRightOf="@+id/tvXLoc"
         android:layout_toEndOf="@+id/tvXLoc" />
 
@@ -61,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Beacon 1:"
-        android:id="@+id/tvXB1"
+        android:id="@+id/tvXB0"
         android:layout_alignTop="@+id/tvXB0"
         android:layout_centerHorizontal="true" />
 
@@ -69,8 +69,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Beacon 2:"
-        android:id="@+id/tvXB2"
-        android:layout_alignTop="@+id/tvXB1"
+        android:id="@+id/tvXB1"
+        android:layout_alignTop="@+id/tvXB0"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -86,14 +86,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvB1"
-        android:layout_below="@+id/tvXB1"
+        android:layout_below="@+id/tvXB0"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvB2"
-        android:layout_below="@+id/tvXB2"
+        android:layout_below="@+id/tvXB1"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -130,8 +130,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:enabled="false"
-        android:layout_toStartOf="@+id/tvXB1"
-        android:layout_toLeftOf="@+id/tvXB1" />
+        android:layout_toStartOf="@+id/tvXB0"
+        android:layout_toLeftOf="@+id/tvXB0" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -139,8 +139,8 @@
         android:id="@+id/tvData"
         android:layout_alignParentBottom="true"
         android:layout_alignTop="@+id/btScan"
-        android:layout_alignLeft="@+id/tvXB1"
-        android:layout_alignStart="@+id/tvXB1"
+        android:layout_alignLeft="@+id/tvXB0"
+        android:layout_alignStart="@+id/tvXB0"
         android:maxLines="1000"
         android:scrollbars="vertical"
         android:layout_alignParentRight="true"

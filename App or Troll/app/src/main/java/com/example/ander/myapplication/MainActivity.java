@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button accelButton, butCollectActivity;
+    Button accelButton, butCollectActivity, btPrototype;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // comments lel2
+        btPrototype = (Button) findViewById(R.id.btPrototype);
+        btPrototype.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent proto = new Intent(getApplicationContext(), PrototypeActivity.class);
+                startActivity(proto);
+            }
+        });
     }
 }
