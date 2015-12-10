@@ -13,7 +13,7 @@
         android:text="Beacon 0:"
         android:id="@+id/tvXB0"
         android:textSize="22dp"
-        android:layout_below="@+id/tvBluetooth"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -23,7 +23,7 @@
         android:text="Beacon 1:"
         android:id="@+id/tvXB1"
         android:textSize="22dp"
-        android:layout_below="@+id/tvBluetooth"
+        android:layout_alignTop="@+id/tvXB0"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -32,7 +32,7 @@
         android:text="Beacon 2:"
         android:id="@+id/tvXB2"
         android:textSize="22dp"
-        android:layout_below="@+id/tvBluetooth"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -65,8 +65,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvBluetooth"
-        android:layout_alignParentTop="true"
+        android:id="@+id/tvRoom"
+        android:textSize="20dp"
+        android:layout_below="@+id/tvB2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Room:"
+        android:id="@+id/tvXRoom"
+        android:textSize="20dp"
+        android:layout_below="@+id/tvB0"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -78,11 +89,11 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvXRoom"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:indeterminate="false"
         android:max="100"
-        android:progress="0" />
+        android:progress="0"
+        android:layout_toStartOf="@+id/tvXBrightness"
+        android:layout_toLeftOf="@+id/tvXBrightness" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -92,31 +103,34 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/pbSound"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:indeterminate="false"
         android:max="100"
-        android:progress="0" />
+        android:progress="0"
+        android:layout_toStartOf="@+id/tvXBrightness"
+        android:layout_toLeftOf="@+id/tvXBrightness" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Room:"
-        android:id="@+id/tvXRoom"
-        android:textSize="20dp"
-        android:layout_below="@+id/tvB0"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="28dp" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="  Sound"
+        android:id="@+id/tvXSound"
+        android:layout_above="@+id/pbBrightness"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/pbSound"
+        android:layout_alignLeft="@+id/tvXBrightness"
+        android:layout_alignStart="@+id/tvXBrightness" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvRoom"
-        android:layout_alignTop="@+id/tvXRoom"
-        android:layout_alignRight="@+id/pbSound"
-        android:layout_alignEnd="@+id/pbSound"
-        android:textSize="20dp" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="  Brightness"
+        android:id="@+id/tvXBrightness"
+        android:layout_below="@+id/tvXSound"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -133,11 +147,49 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="(Currently NOT in a meeting)"
         android:id="@+id/tvMeeting"
         android:layout_below="@+id/btMeeting"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/btMeeting"
+        android:layout_alignEnd="@+id/btMeeting" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_below="@+id/tvMeeting"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/view" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Room Prediction Mode:"
+        android:id="@+id/tvPredictionMode"
+        android:textSize="16dp"
+        android:layout_below="@+id/view"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spPredictionMode"
+        android:layout_below="@+id/view"
+        android:layout_toEndOf="@+id/tvB1"
+        android:layout_toRightOf="@+id/tvB1"
+        android:layout_alignBottom="@+id/tvPredictionMode" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvBluetooth"
+        android:layout_below="@+id/spPredictionMode"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -146,21 +198,27 @@
         android:maxLines="1000"
         android:scrollbars="vertical"
         android:gravity="bottom"
-        android:layout_alignRight="@+id/tvXB2"
-        android:layout_alignEnd="@+id/tvXB2"
-        android:layout_below="@+id/tvMeeting"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/swToggleConsole" />
+        android:layout_above="@+id/swToggleDeveloperMode"
+        android:layout_below="@+id/tvBluetooth"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show debug console"
-        android:id="@+id/swToggleConsole"
+        android:text="Show developer options"
+        android:id="@+id/swToggleDeveloperMode"
+        android:checked="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:checked="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" /><![CDATA[
 
+
+
+    /*android:layout_above="@+id/tvB1"*/ />
+
+
+]]>
 </RelativeLayout>

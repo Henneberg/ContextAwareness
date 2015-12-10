@@ -44,6 +44,8 @@
         </activity>
         <activity android:name=".PrototypeActivity" >
         </activity>
+        <activity android:name=".Util.MathiasSmadrekage" >
+        </activity>
     </application>
 
 </manifest>

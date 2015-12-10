@@ -105,9 +105,9 @@ public class ML_BluetoothCollection extends AppCompatActivity {
         spLocation = (Spinner) findViewById(R.id.spLocation);
 
         tvBeacons = new TextView[NO_OF_BEACONS];
-        tvBeacons[0] = (TextView) findViewById(R.id.tvB0);
-        tvBeacons[1] = (TextView) findViewById(R.id.tvB1);
-        tvBeacons[2] = (TextView) findViewById(R.id.tvB2);
+        tvBeacons[0] = (TextView) findViewById(R.id.tvB_ML0);
+        tvBeacons[1] = (TextView) findViewById(R.id.tvB_ML1);
+        tvBeacons[2] = (TextView) findViewById(R.id.tvB_ML2);
         tvData = (TextView) findViewById(R.id.tvData);
 
         btScan = (Button) findViewById(R.id.btScan);

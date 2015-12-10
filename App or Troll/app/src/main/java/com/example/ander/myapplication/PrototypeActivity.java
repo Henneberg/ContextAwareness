@@ -6,27 +6,44 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ander.myapplication.Util.AppConstants;
 import com.example.ander.myapplication.Util.BTMeasurement;
+import com.example.ander.myapplication.RoomPredictors.J48Predictor;
+import com.example.ander.myapplication.RoomPredictors.NaiveBayesPredictor;
+import com.example.ander.myapplication.RoomPredictors.RandomPredictor;
+import com.example.ander.myapplication.RoomPredictors.RoomPredictor;
+import com.example.ander.myapplication.RoomPredictors.RoundRobinPredictor;
 import com.example.ander.myapplication.Util.SB_Setting;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
+import weka.core.Attribute;
+import weka.core.FastVector;
 import weka.core.Instance;
+import weka.core.Instances;
 
 public class PrototypeActivity extends AppCompatActivity {
 
@@ -40,7 +57,13 @@ public class PrototypeActivity extends AppCompatActivity {
     }};
     private final SB_Setting MEETING_SETTINGS = new SB_Setting(0, 10);
 
-    private final boolean CHANGE_BRIGHTNESS = true;
+    private final String J48NAME = "J48.model";
+    private final String NBNAME = "NaiveBayes.model";
+    private J48 j48Classifier;
+    private NaiveBayes nbClassifier;
+    private RoomPredictor predictor;
+
+    private final boolean CHANGE_BRIGHTNESS = true; // Do we actually want to change the brightness or just pretend?
     private final long MAX_WAIT = 7000; // Max time we will wait to receive signal to a beacon. If this time is exceeded, SS is set to -110.
     private final int NO_OF_BEACONS = 3; // Number of beacons being used
     //private final String ADDR_B0 = "88:C9:D0:71:C1:31"; // Køkken	Nexus 5			88:C9:D0:71:C1:31
@@ -55,11 +78,14 @@ public class PrototypeActivity extends AppCompatActivity {
     private boolean inMeeting;
     private SB_Setting lastSetting;
 
-
-    private TextView tvBluetooth, tvRoom, tvMeeting, tvOutput;
-    private Button btMeeting;
-    private Switch swDebug;
+    private TextView tvBluetooth, tvRoom, tvMeeting, tvPredictionMode, tvOutput;
     private ProgressBar pbSound, pbBrightness;
+    private Button btMeeting;
+
+    private final String[] predModes = {"Naive Bayes", "J48", "(Round Robin)", "(Random Room)"};
+    private Spinner spPredictionMode;
+    private Switch swDeveloper;
+
 
     private TextView[] tvBeacons;
     private Long[] lastSeen;
@@ -106,36 +132,50 @@ public class PrototypeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prototype);
 
+        setupWEKAGarbage();
+        loadClassifierModels();
+
         lastSetting = MEETING_SETTINGS; // It doesn't adjust to this setting when the app starts (intended)
         inMeeting = false;
 
-        tvBluetooth = (TextView) findViewById(R.id.tvBluetooth);
         tvBeacons = new TextView[NO_OF_BEACONS];
         tvBeacons[0] = (TextView) findViewById(R.id.tvB0);
         tvBeacons[1] = (TextView) findViewById(R.id.tvB1);
         tvBeacons[2] = (TextView) findViewById(R.id.tvB2);
         tvRoom = (TextView) findViewById(R.id.tvRoom);
-        tvMeeting = (TextView) findViewById(R.id.tvMeeting);
-        tvOutput = (TextView) findViewById(R.id.tvOutput);
-
-        tvOutput.setMovementMethod(new ScrollingMovementMethod());
-        tvOutput.setScrollbarFadingEnabled(false);
-
-        btMeeting = (Button) findViewById(R.id.btMeeting);
-
-        swDebug = (Switch) findViewById(R.id.swToggleConsole);
 
         pbSound = (ProgressBar) findViewById(R.id.pbSound);
         pbBrightness = (ProgressBar) findViewById(R.id.pbBrightness);
 
-        swDebug.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        btMeeting = (Button) findViewById(R.id.btMeeting);
+        tvMeeting = (TextView) findViewById(R.id.tvMeeting);
+
+        tvPredictionMode = (TextView) findViewById(R.id.tvPredictionMode);
+        spPredictionMode = (Spinner) findViewById(R.id.spPredictionMode);
+        tvBluetooth = (TextView) findViewById(R.id.tvBluetooth);
+        tvOutput = (TextView) findViewById(R.id.tvOutput);
+        swDeveloper = (Switch) findViewById(R.id.swToggleDeveloperMode);
+
+
+        spPredictionMode.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, predModes));
+        spPredictionMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                changePredictionMode(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        tvOutput.setMovementMethod(new ScrollingMovementMethod());
+        tvOutput.setScrollbarFadingEnabled(false);
+
+        swDeveloper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    tvOutput.setVisibility(View.VISIBLE);
-                } else {
-                    tvOutput.setVisibility(View.INVISIBLE);
-                }
+                setDeveloperView(isChecked);
             }
         });
 
@@ -153,6 +193,7 @@ public class PrototypeActivity extends AppCompatActivity {
 
         runScan();
     }
+
 
 
 
@@ -183,13 +224,13 @@ public class PrototypeActivity extends AppCompatActivity {
         if(inMeeting) {
             outputDebug("---Meeting started");
             btMeeting.setText("End Meeting");
-            tvMeeting.setText("(Currently in a meeting)");
+            //tvMeeting.setText("(Currently in a meeting)");
             setStates(MEETING_SETTINGS);
 
         } else {
             outputDebug("---Meeting ended - Reverting to last settings");
             btMeeting.setText("Start Meeting");
-            tvMeeting.setText("(Currently NOT in a meeting)");
+            //tvMeeting.setText("(Currently NOT in a meeting)");
             setStates(lastSetting);
         }
 
@@ -244,38 +285,86 @@ public class PrototypeActivity extends AppCompatActivity {
     private void scanFinished() {
         finished = true;
         blAdapter.cancelDiscovery();
-        outputDebug("-----------------------Scan cycle finished");
+        outputDebug("----------------------------------------Scan cycle finished");
         tvBluetooth.setText("Stopped");
 
         String room = predictCurrentRoom();
         tvRoom.setText(room);
+        outputDebug("PHONE IN " + room);
 
-        if(!inMeeting) {
-            SB_Setting sett = rules.get(room);
+        SB_Setting sett = rules.get(room);
+
+        if(sett != null) {
             lastSetting = sett;
-            outputDebug("SETTINGS FOR "+room);
-            setStates(sett);
+            if(!inMeeting) {
+                setStates(sett);
+            } else {
+                outputDebug("No settings changed - IN A MEETING");
+            }
         } else {
-            outputDebug("No settings changed - IN A MEETING");
+            outputDebug("(settings = null)");
         }
 
         runScan();
     }
 
     private String predictCurrentRoom() {
-        double[] vals = new double[4];
+        Instances data = new Instances("BluetoothPositioning", attributes, 0);
+        data.setClass(classAttr);
+
+        double[] vals = new double[data.numAttributes()];
         vals[0] = SS[0];
         vals[1] = SS[1];
         vals[2] = SS[2];
         //vals[3] = classes.indexOf(classVal); // Skal denne sættes, når vi prøver at rode i modellen?
 
         Instance ins = new Instance(1.0, vals); //Indsæt Jens-Emils Kode
+        data.add(ins);
 
-        outputDebug("-----predictCurrentRoom() NOT IMPLEMENTED");
-
-        int random = (int) (Math.random() * AppConstants.locations.length);
-        return AppConstants.locations[random];
+        return predictor.predictRoom(data);
     }
+
+    private void changePredictionMode(int position) {
+        outputDebug("############ PREDICTION MODE: " + predModes[position]);
+        switch(position) {
+            case 0:
+                predictor = new NaiveBayesPredictor(nbClassifier);
+                break;
+            case 1:
+                predictor = new J48Predictor(j48Classifier);
+                break;
+            case 2:
+                predictor = new RoundRobinPredictor();
+                break;
+            case 3:
+                predictor = new RandomPredictor();
+                break;
+
+            default:
+                predictor = new RoomPredictor() {
+                    @Override
+                    public String predictRoom(Instances insts) {
+                        return "BAD ROOM PREDICTOR";
+                    }
+                };
+                break;
+        }
+    }
+
+    private void setDeveloperView(boolean isChecked) {
+        int setTo;
+        if(isChecked)
+            setTo = View.VISIBLE;
+        else
+            setTo = View.INVISIBLE;
+
+        tvPredictionMode.setVisibility(setTo);
+        spPredictionMode.setVisibility(setTo);
+        tvBluetooth.setVisibility(setTo);
+        tvOutput.setVisibility(setTo);
+    }
+
+
 
     private void outputDebug(String s) {
         tvOutput.append("\n" + s);
@@ -309,4 +398,44 @@ public class PrototypeActivity extends AppCompatActivity {
 
 
 
+
+    private void loadClassifierModels() {
+        AssetManager assetMgr = getApplicationContext().getAssets();
+
+        try {
+            ObjectInputStream ois = new ObjectInputStream(assetMgr.open(J48NAME));
+            j48Classifier = (J48) ois.readObject();
+            ois.close();
+
+            ObjectInputStream ois2 = new ObjectInputStream(assetMgr.open(NBNAME));
+            nbClassifier = (NaiveBayes) ois2.readObject();
+            ois2.close();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    FastVector attributes;
+    FastVector classes;
+    Attribute classAttr;
+
+    private void setupWEKAGarbage() {
+        attributes = new FastVector();
+
+        attributes.addElement(new Attribute("SS1"));
+        attributes.addElement(new Attribute("SS2"));
+        attributes.addElement(new Attribute("SS3"));
+
+        classes = new FastVector(); // Adds every room (from 'locations' String-array in AppConstants) to the possible values for class.
+        for(String s : AppConstants.locations) {
+            classes.addElement(s);
+        }
+        classAttr = new Attribute("class", classes);
+        attributes.addElement(classAttr);
+    }
 }
