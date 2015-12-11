@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -64,14 +65,15 @@ public class PrototypeActivity extends AppCompatActivity {
     private RoomPredictor predictor;
 
     private final boolean CHANGE_BRIGHTNESS = true; // Do we actually want to change the brightness or just pretend?
-    private final long MAX_WAIT = 7000; // Max time we will wait to receive signal to a beacon. If this time is exceeded, SS is set to -110.
+    private final long MAX_WAIT = 25000; // Max time we will wait to receive signal to a beacon. If this time is exceeded, SS is set to -110.
+    private final long TIME_BETWEEN_SCANS = 10000; // Time between one scan finishing, and next starting.
     private final int NO_OF_BEACONS = 3; // Number of beacons being used
-    //private final String ADDR_B0 = "88:C9:D0:71:C1:31"; // Køkken	Nexus 5			88:C9:D0:71:C1:31
-    //private final String ADDR_B1 = "DD:7D:B3:58:CA:98"; // Stue	    NabuX			DD:7D:B3:58:CA:98
-    //private final String ADDR_B2 = "08:D4:2B:1F:1A:77"; // Sove	    Nexus 10	    08:D4:2B:1F:1A:77
-    private final String ADDR_B0 = "34:E2:FD:4E:0D:D8"; // Anders iPhone
-    private final String ADDR_B1 = "FAKEADD";
-    private final String ADDR_B2 = "FAKEADD";
+    private final String ADDR_B0 = "88:C9:D0:71:C1:31"; // Køkken	Nexus 5			88:C9:D0:71:C1:31
+    private final String ADDR_B1 = "DD:7D:B3:58:CA:98"; // Stue	    NabuX			DD:7D:B3:58:CA:98
+    private final String ADDR_B2 = "08:D4:2B:1F:1A:77"; // Sove	    Nexus 10	    08:D4:2B:1F:1A:77
+    //private final String ADDR_B0 = "34:E2:FD:4E:0D:D8"; // Anders iPhone
+    //private final String ADDR_B1 = "FAKEADD";
+    //private final String ADDR_B2 = "FAKEADD";
 
     private BluetoothAdapter blAdapter;
 
@@ -91,7 +93,7 @@ public class PrototypeActivity extends AppCompatActivity {
     private Long[] lastSeen;
     private Short[] SS;
     private boolean finished;
-    private ArrayList<BTMeasurement> measurements;
+    private int scansFinished = 0;
 
     private int scans = 0;
     private final BroadcastReceiver blReceiver = new BroadcastReceiver() {
@@ -253,7 +255,8 @@ public class PrototypeActivity extends AppCompatActivity {
         }
 
         if(fin) {
-            scanFinished();
+            boolean slow = (rssi == -110); // Did we finish because of slowness?
+            scanFinished(slow);
         }
     }
 
@@ -276,16 +279,21 @@ public class PrototypeActivity extends AppCompatActivity {
         SS = new Short[NO_OF_BEACONS];
 
         for(TextView tv : tvBeacons) {
-            tv.setText("-110");
+            tv.setText("");
         }
 
         blAdapter.startDiscovery();
     }
 
-    private void scanFinished() {
-        finished = true;
+    private void scanFinished(boolean slow) {
+        scansFinished++;
         blAdapter.cancelDiscovery();
-        outputDebug("----------------------------------------Scan cycle finished");
+        finished = true;
+        outputDebug("-------------------------------------Scan cycle "+scansFinished+" finished");
+        if(!slow)
+            outputDebug("["+SS[0]+" ; "+SS[1]+" ; "+SS[2]+"]");
+        else
+            outputDebug("["+SS[0]+" ; "+SS[1]+" ; "+SS[2]+"] (SLOW)");
         tvBluetooth.setText("Stopped");
 
         String room = predictCurrentRoom();
@@ -305,7 +313,15 @@ public class PrototypeActivity extends AppCompatActivity {
             outputDebug("(settings = null)");
         }
 
-        runScan();
+
+        outputDebug("Waiting "+TIME_BETWEEN_SCANS+"ms for next scan...");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runScan();
+            }
+        }, TIME_BETWEEN_SCANS);
     }
 
     private String predictCurrentRoom() {

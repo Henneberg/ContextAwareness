@@ -1,4 +1,4 @@
-package com.example.ander.myapplication;
+package com.example.ander.myapplication.Unused;
 
 import android.media.AudioManager;
 import android.provider.Settings;
@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.ander.myapplication.R;
 
 public class CollectActivity extends AppCompatActivity {
 

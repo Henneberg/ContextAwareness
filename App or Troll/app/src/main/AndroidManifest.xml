@@ -35,14 +35,15 @@
             android:targetSdkVersion="19" />
 
         <activity
-            android:name=".CollectActivity"
+            android:name=".Unused.CollectActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ML_BluetoothCollection"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".PrototypeActivity" >
+        <activity android:name=".PrototypeActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".Util.MathiasSmadrekage" >
         </activity>
